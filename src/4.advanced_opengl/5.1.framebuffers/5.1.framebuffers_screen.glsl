@@ -7,11 +7,11 @@ uniform sampler2D screenTexture;
 uniform sampler2D DepthCoords;
 
 //No effect
-//void main()
-//{
-//    vec3 col = texture(screenTexture, TexCoords).rgb;
-//    FragColor = vec4(col, 1.0);
-//} 
+void main()
+{
+    vec3 col = texture(screenTexture, TexCoords).rgb;
+    FragColor = vec4(col, 1.0);
+} 
 
 //Distance Occlusion
 //float linearize_depth(float original_depth) {
@@ -37,56 +37,56 @@ uniform sampler2D DepthCoords;
 //} 
 
 //Outline
-float linearize_depth(float original_depth) {
-    float near = 0.1;
-    float far = 5.0;
-    return (2.0 * near) / (far + near - original_depth * (far - near));
-}
-void main()
-{
-    const float offset = 1.0 / 300.0;  
-
-    vec2 offsets[4] = vec2[](
-        vec2( 0.0f,    offset), // top-center
-        vec2(-offset,  0.0f),   // center-left
-        vec2( offset,  0.0f),   // center-right
-        vec2( 0.0f,   -offset) // bottom-center
-    );
-
-    //retrieve depth value from the red channel
-    float depth = texture(DepthCoords, TexCoords).r;
-    //colorize depth value, only if there actually is an object
-    if (depth < 0.999) {
-        depth = linearize_depth(depth);
-    }
-    
-    float depthDiff = 0.0;
-
-    for(int i = 0; i < 4; i++)
-    {
-        float sampleDepth = linearize_depth(texture(DepthCoords, TexCoords.st + offsets[i]).r);
-//        depthDiff += abs(depth - sampleDepth);
-        if (abs(depth - sampleDepth) >= 0.1f)
-            depthDiff += 1.0f;
-    }
-
-    vec3 col = texture(screenTexture, TexCoords).rgb;
-
-    // Apply multiplier & bias to each 
-    float depthBias = 1.0f;
-    float depthMultiplier = 1.0f;
-
-    depthDiff = depthDiff * depthMultiplier;
-    depthDiff = clamp(depthDiff, 0.0, 1.0);
-    depthDiff = pow(depthDiff, depthBias);
-
-    float outline = depthDiff;
-
-    vec4 outlineColor = vec4(1.0, 0.0, 1.0, 1.0);
-
-    FragColor = vec4(mix(vec4(col, 1.0), outlineColor, outline));
-//    FragColor = vec4(vec3(depth), 1.0);
-} 
+//float linearize_depth(float original_depth) {
+//    float near = 0.1;
+//    float far = 5.0;
+//    return (2.0 * near) / (far + near - original_depth * (far - near));
+//}
+//void main()
+//{
+//    const float offset = 1.0 / 300.0;  
+//
+//    vec2 offsets[4] = vec2[](
+//        vec2( 0.0f,    offset), // top-center
+//        vec2(-offset,  0.0f),   // center-left
+//        vec2( offset,  0.0f),   // center-right
+//        vec2( 0.0f,   -offset) // bottom-center
+//    );
+//
+//    //retrieve depth value from the red channel
+//    float depth = texture(DepthCoords, TexCoords).r;
+//    //colorize depth value, only if there actually is an object
+//    if (depth < 0.999) {
+//        depth = linearize_depth(depth);
+//    }
+//    
+//    float depthDiff = 0.0;
+//
+//    for(int i = 0; i < 4; i++)
+//    {
+//        float sampleDepth = linearize_depth(texture(DepthCoords, TexCoords.st + offsets[i]).r);
+////        depthDiff += abs(depth - sampleDepth);
+//        if (abs(depth - sampleDepth) >= 0.1f)
+//            depthDiff += 1.0f;
+//    }
+//
+//    vec3 col = texture(screenTexture, TexCoords).rgb;
+//
+//    // Apply multiplier & bias to each 
+//    float depthBias = 1.0f;
+//    float depthMultiplier = 1.0f;
+//
+//    depthDiff = depthDiff * depthMultiplier;
+//    depthDiff = clamp(depthDiff, 0.0, 1.0);
+//    depthDiff = pow(depthDiff, depthBias);
+//
+//    float outline = depthDiff;
+//
+//    vec4 outlineColor = vec4(1.0, 0.0, 1.0, 1.0);
+//
+//    FragColor = vec4(mix(vec4(col, 1.0), outlineColor, outline));
+////    FragColor = vec4(vec3(depth), 1.0);
+//} 
 
 //Gray Scale
 //void main()
